@@ -15,6 +15,10 @@ public class FavoritoService {
 
     private final FavoritoRepository favoritoRepository;
 
+    public List<Favorito> listarFavoritos() {
+        return favoritoRepository.listarFilmesFavoritos();
+    }
+
     public Favorito Salvar(Favorito assinatura) {
         return favoritoRepository.save(assinatura);
     }

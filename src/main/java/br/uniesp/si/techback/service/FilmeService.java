@@ -16,6 +16,10 @@ public class FilmeService {
 
     private final FilmeRepository filmeRepository;
 
+    public List<Filme> listarOrdenado() {
+        return filmeRepository.listarFilmeAsc();
+    }
+
     public List<Filme> listar() {
         log.info("Buscando todos os filmes cadastrados");
         try {
