@@ -28,8 +28,9 @@ public class Filme {
     @Column(name = "data_lancamento")
     private LocalDate dataLancamento;
 
-    @Column(length = 50)
-    private String genero;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "genero_id", nullable = false)
+    private Genero genero;
 
     @Column(name = "duracao_minutos")
     private Integer duracaoMinutos;

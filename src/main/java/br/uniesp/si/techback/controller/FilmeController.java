@@ -20,6 +20,17 @@ public class FilmeController {
 
     private final FilmeService filmeService;
 
+    @GetMapping("/ordenado")
+    public List<Filme> listarOrdenado() {
+        log.info("Listando todos os filmes");
+        return filmeService.listarOrdenado();
+    }
+
+    @GetMapping("/buscar")
+    public List<Filme> listarPorGenero(@RequestParam String genero) {
+        return filmeService.buscarPorGenero(genero);
+    }
+
     @GetMapping
     public List<Filme> listar() {
         log.info("Listando todos os filmes");
