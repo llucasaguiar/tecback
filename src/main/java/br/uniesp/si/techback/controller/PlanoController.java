@@ -1,9 +1,7 @@
 package br.uniesp.si.techback.controller;
 
 
-import br.uniesp.si.techback.model.Funcionario;
 import br.uniesp.si.techback.model.Plano;
-import br.uniesp.si.techback.service.FuncionarioService;
 import br.uniesp.si.techback.service.PlanoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
