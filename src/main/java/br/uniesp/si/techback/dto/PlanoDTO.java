@@ -1,33 +1,25 @@
-package br.uniesp.si.techback.model;
+package br.uniesp.si.techback.dto;
 
-import jakarta.persistence.*;
+import br.uniesp.si.techback.model.Assinatura;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Entity
-@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "planos")
-public class Plano {
+public class PlanoDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @NotBlank(message = "O nome é obrigatório.")
     private String nome; // Ex: Básico, Padrão, Premium
 
     private Double preco;
     private int limiteDiario;
     private int streamsSimultaneos;
-
-    @OneToMany(mappedBy = "plano", cascade = CascadeType.ALL)
     private List<Assinatura> assinaturas;
-
 }

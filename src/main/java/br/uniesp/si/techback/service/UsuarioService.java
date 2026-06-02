@@ -1,40 +1,80 @@
 package br.uniesp.si.techback.service;
 
-import br.uniesp.si.techback.model.Usuarios;
-import br.uniesp.si.techback.repository.UsuariosRepository;
+import br.uniesp.si.techback.model.Usuario;
+import br.uniesp.si.techback.repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UsuarioService {
 
-    private final UsuariosRepository usuariosRepository;
+    private final UsuarioRepository usuariosRepository;
 
-    public Usuarios Salvar(Usuarios usuarios) {
-        return usuariosRepository.save(usuarios);
-    }
-
-    public List<Usuarios> listar() {
-        return usuariosRepository.findAll();
-    }
-
-    public Usuarios atualizar(Long id, Usuarios usuarios) {
-        Optional<Usuarios> user = usuariosRepository.findById(id);
-        if(user.isEmpty()) {
-            throw new RuntimeException("Usuário inexistente.");
-        } else {
-            return usuariosRepository.save(usuarios);
+    @Transactional
+    public Usuario salvar(Usuario usuario) {
+        log.info("Salvando novo usuário: {}", usuario.getId());
+        try {
+            Usuario usuarioSalvo = usuariosRepository.save(usuario);
+            log.info("Usuário salvo com sucesso. ID: {}, Nome: {}", usuarioSalvo.getId(), usuarioSalvo.getNome());
+            return usuarioSalvo;
+        } catch (Exception e) {
+            log.error("Falha ao salvar usuário '{}': {}", usuario.getId(), e.getMessage(), e);
+            throw e;
         }
     }
 
+    public List<Usuario> listar() {
+        log.info("Buscando todos os usuários cadastrados");
+        try {
+            List<Usuario> usuarios = usuariosRepository.findAll();
+            log.debug("Total de usuários encontrados: {}", usuarios.size());
+            return usuarios;
+        } catch (Exception e) {
+            log.error("Falha ao buscar usuários: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @Transactional
+    public Usuario atualizar(Long id, Usuario usuario) {
+        log.info("Atualizando usuário ID: {}", id);
+        return usuariosRepository.findById(id)
+                .map(usuarioExistente -> {
+                    log.debug("Dados atuais de usuário: {}", usuarioExistente);
+                    log.debug("Novos dados: {}", usuario);
+                    usuario.setId(id);
+                    Usuario usuarioAtualizado = usuariosRepository.save(usuario);
+                    log.info("Usuário ID: {} atualizado com sucesso. Novo usuário: {}",
+                            id, usuarioAtualizado.getId());
+                    return usuarioAtualizado;
+                })
+                .orElseThrow(() -> {
+                    String mensagem = String.format("Falha ao atualizar: usuário não encontrado com o ID: %d", id);
+                    log.warn(mensagem);
+                    return new RuntimeException(mensagem);
+                });
+    }
+
+    @Transactional
     public void excluir(Long id) {
-        if(usuariosRepository.existsById(id)){
-            throw new RuntimeException("Id não encontrado.");
+        log.info("Excluindo usuario ID: {}", id);
+        if (!usuariosRepository.existsById(id)) {
+            String mensagem = String.format("Falha ao excluir: usuário não encontrado com o ID: %d", id);
+            log.warn(mensagem);
+            throw new RuntimeException(mensagem);
         }
-        usuariosRepository.deleteById(id);
+        try {
+            usuariosRepository.deleteById(id);
+            log.info("Usuário ID: {} excluído com sucesso", id);
+        } catch (Exception e) {
+            log.error("Erro ao excluir usuário ID {}: {}", id, e.getMessage(), e);
+            throw e;
+        }
     }
 }

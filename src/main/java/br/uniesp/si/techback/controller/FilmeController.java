@@ -52,7 +52,7 @@ public class FilmeController {
     }
 
     @PostMapping
-    public ResponseEntity<Filme> criar(@Valid @RequestBody Filme filme) {
+    public ResponseEntity<Filme> salvar(@Valid @RequestBody Filme filme) {
         log.info("Recebida requisição para criar novo filme: {}", filme.getTitulo());
         try {
             Filme filmeSalvo = filmeService.salvar(filme);
@@ -86,7 +86,7 @@ public class FilmeController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
         log.info("Excluindo filme com ID: {}", id);
         try {
             filmeService.excluir(id);
@@ -97,6 +97,4 @@ public class FilmeController {
             return ResponseEntity.notFound().build();
         }
     }
-
-
 }

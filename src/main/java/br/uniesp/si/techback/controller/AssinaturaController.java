@@ -2,39 +2,76 @@ package br.uniesp.si.techback.controller;
 
 import br.uniesp.si.techback.model.Assinatura;
 import br.uniesp.si.techback.service.AssinaturaService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/assinaturas")
 @RequiredArgsConstructor
-
+@Slf4j
 public class AssinaturaController {
 
     private final AssinaturaService assinaturaService;
 
     @PostMapping
-    public Assinatura salvar(Assinatura assinatura){
-        return assinaturaService.Salvar(assinatura);
+    public ResponseEntity<Assinatura> salvar(@Valid @RequestBody Assinatura assinatura) {
+        log.info("Recebida requisição para criar nova assinatura: {}", assinatura.getId());
+        try {
+            Assinatura assinaturaSalva = assinaturaService.salvar(assinatura);
+            log.info("Assinatura criada com sucesso. ID: {}", assinaturaSalva.getId());
+
+            URI location = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(assinaturaSalva.getId())
+                    .toUri();
+            log.debug("URI de localização da nova assinatura: {}", location);
+
+            return ResponseEntity.created(location).body(assinaturaSalva);
+        } catch (Exception e) {
+            log.error("Erro ao criar assinatura: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
     @GetMapping
-    public List<Assinatura> listar(){
-        return assinaturaService.listar();
+    public List<Assinatura> listar() {
+        log.info("Listando todas as assinaturas");
+        List<Assinatura> assinaturas = assinaturaService.listar();
+        log.debug("Total de assinaturas encontradas: {}", assinaturas.size());
+        return assinaturas;
     }
 
     @PutMapping("/{id}")
-    public Assinatura atualizar(@PathVariable Long id,
-                                @RequestBody Assinatura assinatura){
-        return assinaturaService.atualizar(id, assinatura);
+    public ResponseEntity<Assinatura> atualizar(@PathVariable Long id, @Valid @RequestBody Assinatura assinatura) {
+        log.info("Atualizando assinatura com ID {}: {}", id, assinatura);
+        try {
+            Assinatura assinaturaAtualizada = assinaturaService.atualizar(id, assinatura);
+            log.debug("Assinatura ID {} atualizada com sucesso", id);
+            return ResponseEntity.ok(assinaturaAtualizada);
+        } catch (Exception e) {
+            log.error("Erro ao atualizar assinatura ID {}: {}", id, e.getMessage(), e);
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> excluir(@PathVariable Long id){
-        assinaturaService.excluir(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<Void> excluir(@PathVariable Long id) {
+        log.info("Excluindo assinatura com ID: {}", id);
+        try {
+            assinaturaService.excluir(id);
+            log.debug("Assinatura com ID {} excluída com sucesso", id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            log.error("Erro ao excluir assinatura com ID {}: {}", id, e.getMessage(), e);
+            return ResponseEntity.notFound().build();
+        }
     }
 }

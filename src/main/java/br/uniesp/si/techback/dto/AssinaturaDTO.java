@@ -1,8 +1,8 @@
-package br.uniesp.si.techback.model;
+package br.uniesp.si.techback.dto;
 
-import jakarta.persistence.*;
+import br.uniesp.si.techback.model.MetodoPagamento;
+import br.uniesp.si.techback.model.Plano;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,27 +10,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "Assinatura")
-public class Assinatura {
+public class AssinaturaDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String status; // Ex: ATIVA, INATIVA
     private LocalDateTime iniciadaEm;
     private LocalDate dataVencimento;
     private LocalDateTime canceladaEm;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "plano_id", nullable = false)
     private Plano plano;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "metodo_pagamento_id", nullable = false)
     private MetodoPagamento metodoPagamento;
+
 }

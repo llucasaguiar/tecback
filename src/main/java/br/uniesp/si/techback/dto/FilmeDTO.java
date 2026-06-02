@@ -3,12 +3,14 @@ package br.uniesp.si.techback.dto;
 import br.uniesp.si.techback.validation.GeneroValidation;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FilmeDTO {
