@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.mapper.UsuarioMapper;
 import br.uniesp.si.techback.model.Usuario;
 import br.uniesp.si.techback.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +16,7 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuariosRepository;
+    private final UsuarioMapper usuarioMapper;
 
     @Transactional
     public Usuario salvar(Usuario usuario) {

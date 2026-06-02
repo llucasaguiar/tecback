@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.mapper.FuncionarioMapper;
 import br.uniesp.si.techback.model.Funcionario;
 import br.uniesp.si.techback.repository.FuncionarioRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +16,7 @@ import java.util.List;
 public class FuncionarioService {
 
     private final FuncionarioRepository funcionarioRepository;
+    private final FuncionarioMapper funcionarioMapper;
 
     @Transactional
     public Funcionario salvar(Funcionario funcionario) {

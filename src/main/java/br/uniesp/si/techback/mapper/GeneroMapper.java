@@ -1,31 +1,31 @@
 package br.uniesp.si.techback.mapper;
 
-import br.uniesp.si.techback.dto.FilmeDTO;
-import br.uniesp.si.techback.model.Filme;
+import br.uniesp.si.techback.dto.GeneroDTO;
+import br.uniesp.si.techback.model.Genero;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FilmeMapper {
+public class GeneroMapper {
 
     private final ModelMapper modelMapper;
 
-    public FilmeMapper(ModelMapper modelMapper) {
+    public GeneroMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
-    public Filme toEntity(FilmeDTO dto) {
+    public Genero toEntity(GeneroDTO dto) {
         if (dto == null) {
             return null;
         }
-        return modelMapper.map(dto, Filme.class);
+        return modelMapper.map(dto, Genero.class);
     }
 
-    public FilmeDTO toDTO(Filme entity) {
+    public GeneroDTO toDTO(Genero entity) {
         if (entity == null) {
             return null;
         }
-        return modelMapper.map(entity, FilmeDTO.class);
+        return modelMapper.map(entity, GeneroDTO.class);
     }
 
 }

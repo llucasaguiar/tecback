@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.mapper.GeneroMapper;
 import br.uniesp.si.techback.model.Genero;
 import br.uniesp.si.techback.repository.GeneroRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +16,7 @@ import java.util.List;
 public class GeneroService {
 
     private final GeneroRepository generoRepository;
+    private final GeneroMapper generoMapper;
 
     @Transactional
     public Genero salvar(Genero genero) {

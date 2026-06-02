@@ -1,5 +1,7 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.dto.AssinaturaDTO;
+import br.uniesp.si.techback.mapper.AssinaturaMapper;
 import br.uniesp.si.techback.model.Assinatura;
 import br.uniesp.si.techback.repository.AssinaturaRepository;
 import jakarta.transaction.Transactional;
@@ -8,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -15,26 +18,31 @@ import java.util.List;
 public class AssinaturaService {
 
     private final AssinaturaRepository assinaturaRepository;
+    private final AssinaturaMapper assinaturaMapper;
 
     @Transactional
-    public Assinatura salvar(Assinatura assinatura) {
-        log.info("Salvando nova assinatura: {}", assinatura.getId());
+    public AssinaturaDTO salvar(AssinaturaDTO assinaturaDTO) {
+        log.info("Salvando nova assinatura: {}", assinaturaDTO.getId());
         try {
+            Assinatura assinatura = assinaturaMapper.toEntity(assinaturaDTO);
             Assinatura assinaturaSalva = assinaturaRepository.save(assinatura);
             log.info("Assinatura salva com sucesso. ID: {}", assinaturaSalva.getId());
-            return assinaturaSalva;
+            return assinaturaMapper.toDTO(assinaturaSalva);
         } catch (Exception e) {
-            log.error("Falha ao salvar assinatura '{}': {}", assinatura.getId(), e.getMessage(), e);
+            log.error("Falha ao salvar assinatura '{}': {}", assinaturaDTO.getId(), e.getMessage(), e);
             throw e;
         }
     }
 
-    public List<Assinatura> listar() {
+    public List<AssinaturaDTO> listar() {
         log.info("Buscando todas as assinaturas cadastradas");
         try {
             List<Assinatura> assinaturas = assinaturaRepository.findAll();
-            log.debug("Total de assinaturas encontradas: {}", assinaturas.size());
-            return assinaturas;
+            List<AssinaturaDTO> assinaturasDTO = assinaturas.stream()
+                            .map(assinaturaMapper::toDTO)
+                            .collect(Collectors.toList());
+            log.debug("Total de assinaturas encontradas: {}", assinaturasDTO.size());
+            return assinaturasDTO;
         } catch (Exception e) {
             log.error("Falha ao buscar assinaturas: {}", e.getMessage(), e);
             throw e;
@@ -42,23 +50,25 @@ public class AssinaturaService {
     }
 
     @Transactional
-    public Assinatura atualizar(Long id, Assinatura assinatura) {
+    public AssinaturaDTO atualizar(Long id, AssinaturaDTO assinaturaDTO) {
         log.info("Atualizando assinatura ID: {}", id);
-        return assinaturaRepository.findById(id)
+        Assinatura assinaturaAtualizada = assinaturaRepository.findById(id)
                 .map(assinaturaExistente -> {
                     log.debug("Dados atuais da assinatura: {}", assinaturaExistente);
-                    log.debug("Novos dados: {}", assinatura);
-                    assinatura.setId(id);
-                    Assinatura assinaturaAtualizada = assinaturaRepository.save(assinatura);
+                    log.debug("Novos dados: {}", assinaturaDTO);
+                    assinaturaDTO.setId(id);
+                    Assinatura assinaturaParaAtualizar = assinaturaMapper.toEntity(assinaturaDTO);
+                    Assinatura assinaturaSalva = assinaturaRepository.save(assinaturaParaAtualizar);
                     log.info("Assinatura ID: {} atualizada com sucesso. Nova assinatura: {}",
-                            id, assinaturaAtualizada.getId());
-                    return assinaturaAtualizada;
+                            id, assinaturaSalva.getId());
+                    return assinaturaSalva;
                 })
                 .orElseThrow(() -> {
                     String mensagem = String.format("Falha ao atualizar: assinatura não encontrada com o ID: %d", id);
                     log.warn(mensagem);
                     return new RuntimeException(mensagem);
                 });
+        return assinaturaMapper.toDTO(assinaturaAtualizada);
     }
 
     @Transactional

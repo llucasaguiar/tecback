@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.controller;
 
+import br.uniesp.si.techback.dto.AssinaturaDTO;
 import br.uniesp.si.techback.model.Assinatura;
 import br.uniesp.si.techback.service.AssinaturaService;
 import jakarta.validation.Valid;
@@ -21,10 +22,10 @@ public class AssinaturaController {
     private final AssinaturaService assinaturaService;
 
     @PostMapping
-    public ResponseEntity<Assinatura> salvar(@Valid @RequestBody Assinatura assinatura) {
-        log.info("Recebida requisição para criar nova assinatura: {}", assinatura.getId());
+    public ResponseEntity<AssinaturaDTO> salvar(@Valid @RequestBody AssinaturaDTO assinaturaDTO) {
+        log.info("Recebida requisição para criar nova assinatura: {}", assinaturaDTO.getId());
         try {
-            Assinatura assinaturaSalva = assinaturaService.salvar(assinatura);
+            AssinaturaDTO assinaturaSalva = assinaturaService.salvar(assinaturaDTO);
             log.info("Assinatura criada com sucesso. ID: {}", assinaturaSalva.getId());
 
             URI location = ServletUriComponentsBuilder
@@ -42,18 +43,18 @@ public class AssinaturaController {
     }
 
     @GetMapping
-    public List<Assinatura> listar() {
+    public List<AssinaturaDTO> listar() {
         log.info("Listando todas as assinaturas");
-        List<Assinatura> assinaturas = assinaturaService.listar();
+        List<AssinaturaDTO> assinaturas = assinaturaService.listar();
         log.debug("Total de assinaturas encontradas: {}", assinaturas.size());
         return assinaturas;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Assinatura> atualizar(@PathVariable Long id, @Valid @RequestBody Assinatura assinatura) {
-        log.info("Atualizando assinatura com ID {}: {}", id, assinatura);
+    public ResponseEntity<AssinaturaDTO> atualizar(@PathVariable Long id, @Valid @RequestBody AssinaturaDTO assinaturaDTO) {
+        log.info("Atualizando assinatura com ID {}: {}", id, assinaturaDTO);
         try {
-            Assinatura assinaturaAtualizada = assinaturaService.atualizar(id, assinatura);
+            AssinaturaDTO assinaturaAtualizada = assinaturaService.atualizar(id, assinaturaDTO);
             log.debug("Assinatura ID {} atualizada com sucesso", id);
             return ResponseEntity.ok(assinaturaAtualizada);
         } catch (Exception e) {

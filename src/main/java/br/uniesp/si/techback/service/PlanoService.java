@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.mapper.PlanoMapper;
 import br.uniesp.si.techback.model.Plano;
 import br.uniesp.si.techback.repository.PlanoRepository;
 import jakarta.transaction.Transactional;
@@ -13,7 +14,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class PlanoService {
+
     private final PlanoRepository planoRepository;
+    private final PlanoMapper planoMapper;
 
     @Transactional
     public Plano salvar(Plano plano) {

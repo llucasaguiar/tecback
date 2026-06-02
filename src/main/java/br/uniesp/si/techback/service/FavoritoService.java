@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.mapper.FavoritoMapper;
 import br.uniesp.si.techback.model.Favorito;
 import br.uniesp.si.techback.repository.FavoritoRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +16,7 @@ import java.util.List;
 public class FavoritoService {
 
     private final FavoritoRepository favoritoRepository;
+    private final FavoritoMapper favoritoMapper;
 
     @Transactional
     public Favorito salvar(Favorito favorito) {

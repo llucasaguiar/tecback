@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.mapper.MetodoPagamentoMapper;
 import br.uniesp.si.techback.model.MetodoPagamento;
 import br.uniesp.si.techback.repository.MetodoPagamentoRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +16,7 @@ import java.util.List;
 public class MetodoPagamentoService {
 
     private final MetodoPagamentoRepository metodoPagamentoRepository;
+    private final MetodoPagamentoMapper metodoPagamentoMapper;
 
     @Transactional
     public MetodoPagamento salvar(MetodoPagamento metodoPagamento) {
