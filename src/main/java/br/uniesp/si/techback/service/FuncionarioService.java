@@ -1,5 +1,7 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.client.BrasilApiClient;
+import br.uniesp.si.techback.dto.BrasilApiCepResponseDTO;
 import br.uniesp.si.techback.dto.FuncionarioDTO;
 import br.uniesp.si.techback.mapper.FuncionarioMapper;
 import br.uniesp.si.techback.model.Funcionario;
@@ -7,6 +9,7 @@ import br.uniesp.si.techback.repository.FuncionarioRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +23,12 @@ public class FuncionarioService {
     private final FuncionarioRepository funcionarioRepository;
     private final FuncionarioMapper funcionarioMapper;
 
+    @Autowired
+    private BrasilApiClient brasilApiClient;
+
+    public BrasilApiCepResponseDTO consultarEndereco(String cep) {
+        return brasilApiClient.buscarPorCep(cep);
+    }
 
     @Transactional
     public FuncionarioDTO salvar(FuncionarioDTO funcionarioDTO) {

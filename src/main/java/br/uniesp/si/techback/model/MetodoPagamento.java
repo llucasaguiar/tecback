@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.model;
 
+import br.uniesp.si.techback.validation.MetodoPagamentoValidation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class MetodoPagamento {
     private Long id;
 
     @Column(nullable = false)
+    @MetodoPagamentoValidation
     private String descricao; // Ex: Cartão de Crédito, Pix, Boleto
 
 }
