@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.controller;
 
+import br.uniesp.si.techback.dto.FuncionarioDTO;
 import br.uniesp.si.techback.model.Funcionario;
 import br.uniesp.si.techback.model.Genero;
 import br.uniesp.si.techback.service.FuncionarioService;
@@ -22,10 +23,10 @@ public class FuncionarioController {
     private final FuncionarioService funcionarioService;
 
     @PostMapping
-    public ResponseEntity<Funcionario> salvar(@Valid @RequestBody Funcionario funcionario) {
-        log.info("Recebida requisição para criar novo funcionário: {}", funcionario.getNome());
+    public ResponseEntity<FuncionarioDTO> salvar(@Valid @RequestBody FuncionarioDTO funcionarioDTO) {
+        log.info("Recebida requisição para criar novo funcionário: {}", funcionarioDTO.getNome());
         try {
-            Funcionario funcionarioSalvo = funcionarioService.salvar(funcionario);
+            FuncionarioDTO funcionarioSalvo = funcionarioService.salvar(funcionarioDTO);
             log.info("Funcionário criado com sucesso. ID: {}, Nome: {}", funcionarioSalvo.getId(), funcionarioSalvo.getNome());
 
             URI location = ServletUriComponentsBuilder
@@ -43,18 +44,18 @@ public class FuncionarioController {
     }
 
     @GetMapping
-    public List<Funcionario> listar() {
+    public List<FuncionarioDTO> listar() {
         log.info("Listando todos os funcionários");
-        List<Funcionario> funcionarios = funcionarioService.listar();
+        List<FuncionarioDTO> funcionarios = funcionarioService.listar();
         log.debug("Total de funcionários encontrados: {}", funcionarios.size());
         return funcionarios;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Funcionario> atualizar(@PathVariable Long id, @Valid @RequestBody Funcionario funcionario) {
-        log.info("Atualizando funcionário com ID {}: {}", id, funcionario);
+    public ResponseEntity<FuncionarioDTO> atualizar(@PathVariable Long id, @Valid @RequestBody FuncionarioDTO funcionarioDTO) {
+        log.info("Atualizando funcionário com ID {}: {}", id, funcionarioDTO);
         try {
-            Funcionario funcionarioAtualizado = funcionarioService.atualizar(id, funcionario);
+            FuncionarioDTO funcionarioAtualizado = funcionarioService.atualizar(id, funcionarioDTO);
             log.debug("Funcionário ID {} atualizado com sucesso", id);
             return ResponseEntity.ok(funcionarioAtualizado);
         } catch (Exception e) {

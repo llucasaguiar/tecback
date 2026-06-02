@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.controller;
 
+import br.uniesp.si.techback.dto.MetodoPagamentoDTO;
 import br.uniesp.si.techback.model.MetodoPagamento;
 import br.uniesp.si.techback.service.MetodoPagamentoService;
 import jakarta.validation.Valid;
@@ -21,10 +22,10 @@ public class MetodoPagamentoContoller {
     private final MetodoPagamentoService metodoPagamentoService;
 
     @PostMapping
-    public ResponseEntity<MetodoPagamento> salvar(@Valid @RequestBody MetodoPagamento metodoPagamento) {
-        log.info("Recebida requisição para criar novo método de pagamento: {}", metodoPagamento.getDescricao());
+    public ResponseEntity<MetodoPagamentoDTO> salvar(@Valid @RequestBody MetodoPagamentoDTO metodoPagamentoDTO) {
+        log.info("Recebida requisição para criar novo método de pagamento: {}", metodoPagamentoDTO.getDescricao());
         try {
-            MetodoPagamento metodoPagamentoSalvo = metodoPagamentoService.salvar(metodoPagamento);
+            MetodoPagamentoDTO metodoPagamentoSalvo = metodoPagamentoService.salvar(metodoPagamentoDTO);
             log.info("Método de pagamento criado com sucesso. ID: {}, Descrição: {}", metodoPagamentoSalvo.getId(), metodoPagamentoSalvo.getDescricao());
 
             URI location = ServletUriComponentsBuilder
@@ -42,18 +43,18 @@ public class MetodoPagamentoContoller {
     }
 
     @GetMapping
-    public List<MetodoPagamento> listar() {
+    public List<MetodoPagamentoDTO> listar() {
         log.info("Listando todos os métodos de pagamento");
-        List<MetodoPagamento> metodoPagamentos = metodoPagamentoService.listar();
+        List<MetodoPagamentoDTO> metodoPagamentos = metodoPagamentoService.listar();
         log.debug("Total de métodos de pagamento encontrados: {}", metodoPagamentos.size());
         return metodoPagamentos;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MetodoPagamento> atualizar(@PathVariable Long id, @Valid @RequestBody MetodoPagamento metodoPagamento) {
-        log.info("Atualizando método de pagamento com ID {}: {}", id, metodoPagamento);
+    public ResponseEntity<MetodoPagamentoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody MetodoPagamentoDTO metodoPagamentoDTO) {
+        log.info("Atualizando método de pagamento com ID {}: {}", id, metodoPagamentoDTO);
         try {
-            MetodoPagamento metodoPagamentoAtualizado = metodoPagamentoService.atualizar(id, metodoPagamento);
+            MetodoPagamentoDTO metodoPagamentoAtualizado = metodoPagamentoService.atualizar(id, metodoPagamentoDTO);
             log.debug("Método de pagamento ID {} atualizado com sucesso", id);
             return ResponseEntity.ok(metodoPagamentoAtualizado);
         } catch (Exception e) {

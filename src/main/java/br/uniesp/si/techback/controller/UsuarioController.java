@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.controller;
 
+import br.uniesp.si.techback.dto.UsuarioDTO;
 import br.uniesp.si.techback.model.Usuario;
 import br.uniesp.si.techback.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -21,10 +22,10 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
 
     @PostMapping
-    public ResponseEntity<Usuario> salvar(@Valid @RequestBody Usuario usuario) {
-        log.info("Recebida requisição para criar novo usuário: {}", usuario.getNome());
+    public ResponseEntity<UsuarioDTO> salvar(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+        log.info("Recebida requisição para criar novo usuário: {}", usuarioDTO.getNome());
         try {
-            Usuario usuarioSalvo = usuarioService.salvar(usuario);
+            UsuarioDTO usuarioSalvo = usuarioService.salvar(usuarioDTO);
             log.info("Usuário criado com sucesso. ID: {}, Nome: {}", usuarioSalvo.getId(), usuarioSalvo.getNome());
 
             URI location = ServletUriComponentsBuilder
@@ -42,18 +43,18 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public List<Usuario> listar() {
+    public List<UsuarioDTO> listar() {
         log.info("Listando todos os usuários");
-        List<Usuario> usuarios = usuarioService.listar();
+        List<UsuarioDTO> usuarios = usuarioService.listar();
         log.debug("Total de usuários encontrados: {}", usuarios.size());
         return usuarios;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
-        log.info("Atualizando usuário com ID {}: {}", id, usuario);
+    public ResponseEntity<UsuarioDTO> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioDTO usuarioDTO) {
+        log.info("Atualizando usuário com ID {}: {}", id, usuarioDTO);
         try {
-            Usuario usuarioAtualizado = usuarioService.atualizar(id, usuario);
+            UsuarioDTO usuarioAtualizado = usuarioService.atualizar(id, usuarioDTO);
             log.debug("Usuário ID {} atualizado com sucesso", id);
             return ResponseEntity.ok(usuarioAtualizado);
         } catch (Exception e) {

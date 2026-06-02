@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.dto.GeneroDTO;
 import br.uniesp.si.techback.mapper.GeneroMapper;
 import br.uniesp.si.techback.model.Genero;
 import br.uniesp.si.techback.repository.GeneroRepository;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,24 +21,28 @@ public class GeneroService {
     private final GeneroMapper generoMapper;
 
     @Transactional
-    public Genero salvar(Genero genero) {
-        log.info("Salvando novo gênero: {}", genero.getId());
+    public GeneroDTO salvar(GeneroDTO generoDTO) {
+        log.info("Salvando novo gênero: {}", generoDTO.getId());
         try {
+            Genero genero = generoMapper.toEntity(generoDTO);
             Genero generoSalvo = generoRepository.save(genero);
-            log.info("Gênero salvo com sucesso. ID: {}, Nome: {}", generoSalvo.getId(), generoSalvo.getNome());
-            return generoSalvo;
+            log.info("Gênero salvo com sucesso. ID: {}", generoSalvo.getId());
+            return generoMapper.toDTO(generoSalvo);
         } catch (Exception e) {
-            log.error("Falha ao salvar assinatura '{}': {}", genero.getId(), e.getMessage(), e);
+            log.error("Falha ao salvar gênero '{}': {}", generoDTO.getId(), e.getMessage(), e);
             throw e;
         }
     }
 
-    public List<Genero> listar() {
+    public List<GeneroDTO> listar() {
         log.info("Buscando todos os gêneros cadastrados");
         try {
             List<Genero> generos = generoRepository.findAll();
-            log.debug("Total de gêneros encontrados: {}", generos.size());
-            return generos;
+            List<GeneroDTO> generosDTO = generos.stream()
+                    .map(generoMapper::toDTO)
+                    .collect(Collectors.toList());
+            log.debug("Total de gêneros encontrados: {}", generosDTO.size());
+            return generosDTO;
         } catch (Exception e) {
             log.error("Falha ao buscar gêneros: {}", e.getMessage(), e);
             throw e;
@@ -44,23 +50,25 @@ public class GeneroService {
     }
 
     @Transactional
-    public Genero atualizar(Long id, Genero genero) {
+    public GeneroDTO atualizar(Long id, GeneroDTO generoDTO) {
         log.info("Atualizando gênero ID: {}", id);
-        return generoRepository.findById(id)
+        Genero generoAtualizado = generoRepository.findById(id)
                 .map(generoExistente -> {
-                    log.debug("Dados atuais de gênero: {}", generoExistente);
-                    log.debug("Novos dados: {}", genero);
-                    genero.setId(id);
-                    Genero generoAtualizado = generoRepository.save(genero);
+                    log.debug("Dados atuais do gênero: {}", generoExistente);
+                    log.debug("Novos dados: {}", generoDTO);
+                    generoDTO.setId(id);
+                    Genero generoParaAtualizar = generoMapper.toEntity(generoDTO);
+                    Genero generoSalvo = generoRepository.save(generoParaAtualizar);
                     log.info("Gênero ID: {} atualizado com sucesso. Novo gênero: {}",
-                            id, generoAtualizado.getId());
-                    return generoAtualizado;
+                            id, generoSalvo.getId());
+                    return generoSalvo;
                 })
                 .orElseThrow(() -> {
                     String mensagem = String.format("Falha ao atualizar: gênero não encontrado com o ID: %d", id);
                     log.warn(mensagem);
                     return new RuntimeException(mensagem);
                 });
+        return generoMapper.toDTO(generoAtualizado);
     }
 
     @Transactional

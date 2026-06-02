@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.dto.MetodoPagamentoDTO;
 import br.uniesp.si.techback.mapper.MetodoPagamentoMapper;
 import br.uniesp.si.techback.model.MetodoPagamento;
 import br.uniesp.si.techback.repository.MetodoPagamentoRepository;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,48 +21,54 @@ public class MetodoPagamentoService {
     private final MetodoPagamentoMapper metodoPagamentoMapper;
 
     @Transactional
-    public MetodoPagamento salvar(MetodoPagamento metodoPagamento) {
-        log.info("Salvando novo método de pagamento: {}", metodoPagamento.getId());
+    public MetodoPagamentoDTO salvar(MetodoPagamentoDTO metodoPagamentoDTO) {
+        log.info("Salvando novo método de pagamento: {}", metodoPagamentoDTO.getId());
         try {
+            MetodoPagamento metodoPagamento = metodoPagamentoMapper.toEntity(metodoPagamentoDTO);
             MetodoPagamento metodoPagamentoSalvo = metodoPagamentoRepository.save(metodoPagamento);
-            log.info("Método de pagamento salvo com sucesso. ID: {}, Descrição: {}", metodoPagamentoSalvo.getId(), metodoPagamentoSalvo.getDescricao());
-            return metodoPagamentoSalvo;
+            log.info("Método de pagamento salvo com sucesso. ID: {}", metodoPagamentoSalvo.getId());
+            return metodoPagamentoMapper.toDTO(metodoPagamentoSalvo);
         } catch (Exception e) {
-            log.error("Falha ao salvar método de pagamento '{}': {}", metodoPagamento.getId(), e.getMessage(), e);
+            log.error("Falha ao salvar método de pagamento '{}': {}", metodoPagamentoDTO.getId(), e.getMessage(), e);
             throw e;
         }
     }
 
-    public List<MetodoPagamento> listar() {
+    public List<MetodoPagamentoDTO> listar() {
         log.info("Buscando todos os métodos de pagamento cadastrados");
         try {
-            List<MetodoPagamento> metodoPagamentos = metodoPagamentoRepository.findAll();
-            log.debug("Total de gêneros encontrados: {}", metodoPagamentos.size());
-            return metodoPagamentos;
+            List<MetodoPagamento> metodosPagamento = metodoPagamentoRepository.findAll();
+            List<MetodoPagamentoDTO> metodosPagamentoDTO = metodosPagamento.stream()
+                    .map(metodoPagamentoMapper::toDTO)
+                    .collect(Collectors.toList());
+            log.debug("Total de métodos de pagamento encontrados: {}", metodosPagamentoDTO.size());
+            return metodosPagamentoDTO;
         } catch (Exception e) {
-            log.error("Falha ao buscar métodos de pagamentos: {}", e.getMessage(), e);
+            log.error("Falha ao buscar métodos de pagamento: {}", e.getMessage(), e);
             throw e;
         }
     }
 
     @Transactional
-    public MetodoPagamento atualizar(Long id, MetodoPagamento metodoPagamento) {
+    public MetodoPagamentoDTO atualizar(Long id, MetodoPagamentoDTO metodoPagamentoDTO) {
         log.info("Atualizando método de pagamento ID: {}", id);
-        return metodoPagamentoRepository.findById(id)
+        MetodoPagamento metodoPagamentoAtualizado = metodoPagamentoRepository.findById(id)
                 .map(metodoPagamentoExistente -> {
-                    log.debug("Dados atuais de método de pagamento: {}", metodoPagamentoExistente);
-                    log.debug("Novos dados: {}", metodoPagamento);
-                    metodoPagamento.setId(id);
-                    MetodoPagamento metodoPagamentoAtualizado = metodoPagamentoRepository.save(metodoPagamento);
-                    log.info("Método de pagamento ID: {} atualizado com sucesso. Novo método de pagamento: {}",
-                            id, metodoPagamentoAtualizado.getId());
-                    return metodoPagamentoAtualizado;
+                    log.debug("Dados atuais do método de pagamento: {}", metodoPagamentoExistente);
+                    log.debug("Novos dados: {}", metodoPagamentoDTO);
+                    metodoPagamentoDTO.setId(id);
+                    MetodoPagamento metodoPagamentoParaAtualizar = metodoPagamentoMapper.toEntity(metodoPagamentoDTO);
+                    MetodoPagamento metodoPagamentoSalvo = metodoPagamentoRepository.save(metodoPagamentoParaAtualizar);
+                    log.info("Método de pagamento ID: {} atualizado com sucesso. Novo método: {}",
+                            id, metodoPagamentoSalvo.getId());
+                    return metodoPagamentoSalvo;
                 })
                 .orElseThrow(() -> {
                     String mensagem = String.format("Falha ao atualizar: método de pagamento não encontrado com o ID: %d", id);
                     log.warn(mensagem);
                     return new RuntimeException(mensagem);
                 });
+        return metodoPagamentoMapper.toDTO(metodoPagamentoAtualizado);
     }
 
     @Transactional

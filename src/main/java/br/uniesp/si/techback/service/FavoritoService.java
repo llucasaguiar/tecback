@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.dto.FavoritoDTO;
 import br.uniesp.si.techback.mapper.FavoritoMapper;
 import br.uniesp.si.techback.model.Favorito;
 import br.uniesp.si.techback.repository.FavoritoRepository;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,24 +21,28 @@ public class FavoritoService {
     private final FavoritoMapper favoritoMapper;
 
     @Transactional
-    public Favorito salvar(Favorito favorito) {
-        log.info("Salvando novo favorito: {}", favorito.getId());
+    public FavoritoDTO salvar(FavoritoDTO favoritoDTO) {
+        log.info("Salvando novo favorito: {}", favoritoDTO.getId());
         try {
+            Favorito favorito = favoritoMapper.toEntity(favoritoDTO);
             Favorito favoritoSalvo = favoritoRepository.save(favorito);
-            log.info("Favorito salvo com sucesso. ID: {}, Titulo: {}", favoritoSalvo.getId(), favoritoSalvo.getFilme());
-            return favoritoSalvo;
+            log.info("Favorito salvo com sucesso. ID: {}", favoritoSalvo.getId());
+            return favoritoMapper.toDTO(favoritoSalvo);
         } catch (Exception e) {
-            log.error("Falha ao salvar favorito '{}': {}", favorito.getId(), e.getMessage(), e);
+            log.error("Falha ao salvar favorito '{}': {}", favoritoDTO.getId(), e.getMessage(), e);
             throw e;
         }
     }
 
-    public List<Favorito> listar() {
-        log.info("Buscando todos os favoritos cadastradas");
+    public List<FavoritoDTO> listar() {
+        log.info("Buscando todos os favoritos cadastrados");
         try {
             List<Favorito> favoritos = favoritoRepository.findAll();
-            log.debug("Total de favoritos encontrados: {}", favoritos.size());
-            return favoritos;
+            List<FavoritoDTO> favoritosDTO = favoritos.stream()
+                    .map(favoritoMapper::toDTO)
+                    .collect(Collectors.toList());
+            log.debug("Total de favoritos encontrados: {}", favoritosDTO.size());
+            return favoritosDTO;
         } catch (Exception e) {
             log.error("Falha ao buscar favoritos: {}", e.getMessage(), e);
             throw e;
@@ -44,23 +50,25 @@ public class FavoritoService {
     }
 
     @Transactional
-    public Favorito atualizar(Long id, Favorito favorito) {
+    public FavoritoDTO atualizar(Long id, FavoritoDTO favoritoDTO) {
         log.info("Atualizando favorito ID: {}", id);
-        return favoritoRepository.findById(id)
+        Favorito favoritoAtualizado = favoritoRepository.findById(id)
                 .map(favoritoExistente -> {
                     log.debug("Dados atuais do favorito: {}", favoritoExistente);
-                    log.debug("Novos dados: {}", favorito);
-                    favorito.setId(id);
-                    Favorito favoritoAtualizado = favoritoRepository.save(favorito);
+                    log.debug("Novos dados: {}", favoritoDTO);
+                    favoritoDTO.setId(id);
+                    Favorito favoritoParaAtualizar = favoritoMapper.toEntity(favoritoDTO);
+                    Favorito favoritoSalva = favoritoRepository.save(favoritoParaAtualizar);
                     log.info("Favorito ID: {} atualizado com sucesso. Novo favorito: {}",
-                            id, favoritoAtualizado.getId());
-                    return favoritoAtualizado;
+                            id, favoritoSalva.getId());
+                    return favoritoSalva;
                 })
                 .orElseThrow(() -> {
                     String mensagem = String.format("Falha ao atualizar: favorito não encontrado com o ID: %d", id);
                     log.warn(mensagem);
                     return new RuntimeException(mensagem);
                 });
+        return favoritoMapper.toDTO(favoritoAtualizado);
     }
 
     @Transactional

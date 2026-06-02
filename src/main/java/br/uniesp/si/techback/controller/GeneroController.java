@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.controller;
 
+import br.uniesp.si.techback.dto.GeneroDTO;
 import br.uniesp.si.techback.model.Genero;
 import br.uniesp.si.techback.service.GeneroService;
 import jakarta.validation.Valid;
@@ -24,10 +25,10 @@ public class GeneroController {
     private static List<Genero> lista = new ArrayList<>();
 
     @PostMapping
-    public ResponseEntity<Genero> salvar(@Valid @RequestBody Genero genero) {
-        log.info("Recebida requisição para criar novo gênero: {}", genero.getNome());
+    public ResponseEntity<GeneroDTO> salvar(@Valid @RequestBody GeneroDTO generoDTO) {
+        log.info("Recebida requisição para criar novo gênero: {}", generoDTO.getNome());
         try {
-            Genero generoSalvo = generoService.salvar(genero);
+            GeneroDTO generoSalvo = generoService.salvar(generoDTO);
             log.info("Gênero criado com sucesso. ID: {}, Nome: {}", generoSalvo.getId(), generoSalvo.getNome());
 
             URI location = ServletUriComponentsBuilder
@@ -45,18 +46,18 @@ public class GeneroController {
     }
 
     @GetMapping
-    public List<Genero> listar() {
+    public List<GeneroDTO> listar() {
         log.info("Listando todos os gêneros");
-        List<Genero> generos = generoService.listar();
+        List<GeneroDTO> generos = generoService.listar();
         log.debug("Total de gêneros encontrados: {}", generos.size());
         return generos;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Genero> atualizar(@PathVariable Long id, @Valid @RequestBody Genero genero) {
-        log.info("Atualizando gênero com ID {}: {}", id, genero);
+    public ResponseEntity<GeneroDTO> atualizar(@PathVariable Long id, @Valid @RequestBody GeneroDTO generoDTO) {
+        log.info("Atualizando gênero com ID {}: {}", id, generoDTO);
         try {
-            Genero generoAtualizado = generoService.atualizar(id, genero);
+            GeneroDTO generoAtualizado = generoService.atualizar(id, generoDTO);
             log.debug("Gênero ID {} atualizado com sucesso", id);
             return ResponseEntity.ok(generoAtualizado);
         } catch (Exception e) {

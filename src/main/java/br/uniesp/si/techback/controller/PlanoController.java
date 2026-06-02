@@ -1,6 +1,7 @@
 package br.uniesp.si.techback.controller;
 
 
+import br.uniesp.si.techback.dto.PlanoDTO;
 import br.uniesp.si.techback.model.Plano;
 import br.uniesp.si.techback.service.PlanoService;
 import jakarta.validation.Valid;
@@ -22,10 +23,10 @@ public class PlanoController {
     private final PlanoService planoService;
 
     @PostMapping
-    public ResponseEntity<Plano> salvar(@Valid @RequestBody Plano plano) {
-        log.info("Recebida requisição para criar novo plano: {}", plano.getNome());
+    public ResponseEntity<PlanoDTO> salvar(@Valid @RequestBody PlanoDTO planoDTO) {
+        log.info("Recebida requisição para criar novo plano: {}", planoDTO.getNome());
         try {
-            Plano planoSalvo = planoService.salvar(plano);
+            PlanoDTO planoSalvo = planoService.salvar(planoDTO);
             log.info("Plano criado com sucesso. ID: {}, Nome: {}", planoSalvo.getId(), planoSalvo.getNome());
 
             URI location = ServletUriComponentsBuilder
@@ -43,18 +44,18 @@ public class PlanoController {
     }
 
     @GetMapping
-    public List<Plano> listar() {
+    public List<PlanoDTO> listar() {
         log.info("Listando todos os planos");
-        List<Plano> planos = planoService.listar();
+        List<PlanoDTO> planos = planoService.listar();
         log.debug("Total de planos encontrados: {}", planos.size());
         return planos;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Plano> atualizar(@PathVariable Long id, @Valid @RequestBody Plano plano) {
-        log.info("Atualizando plano com ID {}: {}", id, plano);
+    public ResponseEntity<PlanoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody PlanoDTO planoDTO) {
+        log.info("Atualizando plano com ID {}: {}", id, planoDTO);
         try {
-            Plano planoAtualizado = planoService.atualizar(id, plano);
+            PlanoDTO planoAtualizado = planoService.atualizar(id, planoDTO);
             log.debug("Plano ID {} atualizado com sucesso", id);
             return ResponseEntity.ok(planoAtualizado);
         } catch (Exception e) {

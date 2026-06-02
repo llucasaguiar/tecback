@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.controller;
 
+import br.uniesp.si.techback.dto.FavoritoDTO;
 import br.uniesp.si.techback.model.Favorito;
 import br.uniesp.si.techback.service.FavoritoService;
 import jakarta.validation.Valid;
@@ -22,16 +23,16 @@ public class FavoritoController {
     private final FavoritoService favoritoService;
 
     @GetMapping("/ordenando")
-    public List<Favorito> listarFavoritos() {
+    public List<FavoritoDTO> listarFavoritos() {
         log.info("Listando todos os filmes favoritos");
         return favoritoService.listar();
     }
 
     @PostMapping
-    public ResponseEntity<Favorito> salvar(@Valid @RequestBody Favorito favorito) {
-        log.info("Recebida requisição para criar novo favorito: {}", favorito.getId());
+    public ResponseEntity<FavoritoDTO> salvar(@Valid @RequestBody FavoritoDTO favoritoDTO) {
+        log.info("Recebida requisição para criar novo favorito: {}", favoritoDTO.getId());
         try {
-            Favorito favoritoSalvo = favoritoService.salvar(favorito);
+            FavoritoDTO favoritoSalvo = favoritoService.salvar(favoritoDTO);
             log.info("Assinatura criada com sucesso. ID: {}", favoritoSalvo.getId());
 
             URI location = ServletUriComponentsBuilder
@@ -49,18 +50,18 @@ public class FavoritoController {
     }
 
     @GetMapping
-    public List<Favorito> listar() {
+    public List<FavoritoDTO> listar() {
         log.info("Listando todos os favoritos");
-        List<Favorito> favoritos = favoritoService.listar();
+        List<FavoritoDTO> favoritos = favoritoService.listar();
         log.debug("Total de favoritos encontrados: {}", favoritos.size());
         return favoritos;
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Favorito> atualizar(@PathVariable Long id, @Valid @RequestBody Favorito favorito) {
-        log.info("Atualizando favorito com ID {}: {}", id, favorito);
+    public ResponseEntity<FavoritoDTO> atualizar(@PathVariable Long id, @Valid @RequestBody FavoritoDTO favoritoDTO) {
+        log.info("Atualizando favorito com ID {}: {}", id, favoritoDTO);
         try {
-            Favorito favoritoAtualizado = favoritoService.atualizar(id, favorito);
+            FavoritoDTO favoritoAtualizado = favoritoService.atualizar(id, favoritoDTO);
             log.debug("Favorito ID {} atualizado com sucesso", id);
             return ResponseEntity.ok(favoritoAtualizado);
         } catch (Exception e) {

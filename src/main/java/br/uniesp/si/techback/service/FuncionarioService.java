@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.service;
 
+import br.uniesp.si.techback.dto.FuncionarioDTO;
 import br.uniesp.si.techback.mapper.FuncionarioMapper;
 import br.uniesp.si.techback.model.Funcionario;
 import br.uniesp.si.techback.repository.FuncionarioRepository;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,25 +20,30 @@ public class FuncionarioService {
     private final FuncionarioRepository funcionarioRepository;
     private final FuncionarioMapper funcionarioMapper;
 
+
     @Transactional
-    public Funcionario salvar(Funcionario funcionario) {
-        log.info("Salvando novo funcionário: {}", funcionario.getId());
+    public FuncionarioDTO salvar(FuncionarioDTO funcionarioDTO) {
+        log.info("Salvando novo funcionário: {}", funcionarioDTO.getId());
         try {
+            Funcionario funcionario = funcionarioMapper.toEntity(funcionarioDTO);
             Funcionario funcionarioSalvo = funcionarioRepository.save(funcionario);
-            log.info("Funcionário salvo com sucesso. ID: {}, Nome: {}", funcionarioSalvo.getId(), funcionarioSalvo.getNome());
-            return funcionarioSalvo;
+            log.info("Funcionário salvo com sucesso. ID: {}", funcionarioSalvo.getId());
+            return funcionarioMapper.toDTO(funcionarioSalvo);
         } catch (Exception e) {
-            log.error("Falha ao salvar funcionário '{}': {}", funcionario.getId(), e.getMessage(), e);
+            log.error("Falha ao salvar funcionário '{}': {}", funcionarioDTO.getId(), e.getMessage(), e);
             throw e;
         }
     }
 
-    public List<Funcionario> listar() {
+    public List<FuncionarioDTO> listar() {
         log.info("Buscando todos os funcionários cadastrados");
         try {
             List<Funcionario> funcionarios = funcionarioRepository.findAll();
-            log.debug("Total de funcionários encontrados: {}", funcionarios.size());
-            return funcionarios;
+            List<FuncionarioDTO> funcionariosDTO = funcionarios.stream()
+                    .map(funcionarioMapper::toDTO)
+                    .collect(Collectors.toList());
+            log.debug("Total de funcionários encontrados: {}", funcionariosDTO.size());
+            return funcionariosDTO;
         } catch (Exception e) {
             log.error("Falha ao buscar funcionários: {}", e.getMessage(), e);
             throw e;
@@ -44,23 +51,25 @@ public class FuncionarioService {
     }
 
     @Transactional
-    public Funcionario atualizar(Long id, Funcionario funcionario) {
+    public FuncionarioDTO atualizar(Long id, FuncionarioDTO funcionarioDTO) {
         log.info("Atualizando funcionário ID: {}", id);
-        return funcionarioRepository.findById(id)
+        Funcionario funcionarioAtualizado = funcionarioRepository.findById(id)
                 .map(funcionarioExistente -> {
-                    log.debug("Dados atuais de funcionário: {}", funcionarioExistente);
-                    log.debug("Novos dados: {}", funcionario);
-                    funcionario.setId(id);
-                    Funcionario funcionarioAtualizado = funcionarioRepository.save(funcionario);
+                    log.debug("Dados atuais do funcionário: {}", funcionarioExistente);
+                    log.debug("Novos dados: {}", funcionarioDTO);
+                    funcionarioDTO.setId(id);
+                    Funcionario funcionarioParaAtualizar = funcionarioMapper.toEntity(funcionarioDTO);
+                    Funcionario funcionarioSalvo = funcionarioRepository.save(funcionarioParaAtualizar);
                     log.info("Funcionário ID: {} atualizado com sucesso. Novo funcionário: {}",
-                            id, funcionarioAtualizado.getId());
-                    return funcionarioAtualizado;
+                            id, funcionarioSalvo.getId());
+                    return funcionarioSalvo;
                 })
                 .orElseThrow(() -> {
                     String mensagem = String.format("Falha ao atualizar: funcionário não encontrado com o ID: %d", id);
                     log.warn(mensagem);
                     return new RuntimeException(mensagem);
                 });
+        return funcionarioMapper.toDTO(funcionarioAtualizado);
     }
 
     @Transactional
