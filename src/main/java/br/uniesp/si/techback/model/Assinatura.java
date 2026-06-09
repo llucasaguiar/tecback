@@ -21,7 +21,9 @@ public class Assinatura {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String status; // Ex: ATIVA, INATIVA
+
     private LocalDateTime iniciadaEm;
     private LocalDate dataVencimento;
     private LocalDateTime canceladaEm;

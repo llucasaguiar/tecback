@@ -1,7 +1,6 @@
 package br.uniesp.si.techback.controller;
 
 import br.uniesp.si.techback.dto.AssinaturaDTO;
-import br.uniesp.si.techback.model.Assinatura;
 import br.uniesp.si.techback.service.AssinaturaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

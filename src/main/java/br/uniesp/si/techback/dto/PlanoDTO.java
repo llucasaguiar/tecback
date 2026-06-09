@@ -1,6 +1,7 @@
 package br.uniesp.si.techback.dto;
 
 import br.uniesp.si.techback.model.Assinatura;
+import br.uniesp.si.techback.validation.PlanoValidation;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,7 @@ public class PlanoDTO {
     private Long id;
 
     @NotBlank(message = "O nome é obrigatório.")
+    @PlanoValidation
     private String nome; // Ex: Básico, Padrão, Premium
 
     private Double preco;

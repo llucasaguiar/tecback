@@ -1,5 +1,6 @@
 package br.uniesp.si.techback.dto;
 
+import br.uniesp.si.techback.validation.MetodoPagamentoValidation;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +14,7 @@ public class MetodoPagamentoDTO {
     private Long id;
 
     @NotBlank(message = "A descrição é obrigatória.")
+    @MetodoPagamentoValidation
     private String descricao; // Ex: Cartão de Crédito, Pix, Boleto
 
 }

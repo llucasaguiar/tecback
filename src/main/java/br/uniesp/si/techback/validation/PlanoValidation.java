@@ -5,15 +5,16 @@ import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
-@Constraint(validatedBy = MetodoPagamentoValidationValidator.class)
+@Constraint(validatedBy = PlanoValidationValidator.class)
 @Documented
 @Target({ElementType.FIELD, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MetodoPagamentoValidation {
+public @interface PlanoValidation {
 
-    String message() default "O método de pagamento informado não é válido ou não está disponível";
+    String message() default "O plano informado não é válido ou não está disponível";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
 }

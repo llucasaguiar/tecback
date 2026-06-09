@@ -2,6 +2,7 @@ package br.uniesp.si.techback.dto;
 
 import br.uniesp.si.techback.model.MetodoPagamento;
 import br.uniesp.si.techback.model.Plano;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,9 @@ public class AssinaturaDTO {
 
     private Long id;
 
+    @NotBlank(message = "O status é obrigatório.")
     private String status; // Ex: ATIVA, INATIVA
+
     private LocalDateTime iniciadaEm;
     private LocalDate dataVencimento;
     private LocalDateTime canceladaEm;
